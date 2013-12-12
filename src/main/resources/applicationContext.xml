@@ -20,6 +20,7 @@
 			<list>
 				<!-- 标准配置 -->
 				<value>classpath:application.properties</value>
+				<value>classpath:freemarker.properties</value>
 			</list>
 		</property>
 	</bean>

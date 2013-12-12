@@ -7,6 +7,7 @@ package com.allyes.mtp;
  */
 public class Response {
 	int status;
+	String encoding="UTF-8";
 	String type;
 	String content;
 	/**
@@ -45,4 +46,18 @@ public class Response {
 	public void setContent(String content) {
 		this.content = content;
 	}
+	
+	/**
+	 * @param encoding the encoding to set
+	 */
+	public void setEncoding(String encoding) {
+		this.encoding = encoding;
+	}
+	/**
+	 * @return the encoding
+	 */
+	public String getEncoding() {
+		return encoding;
+	}
+	
 }

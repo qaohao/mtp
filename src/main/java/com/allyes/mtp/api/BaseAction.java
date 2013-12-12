@@ -2,6 +2,7 @@ package com.allyes.mtp.api;
 
 import java.util.Map;
 
+import org.apache.commons.beanutils.DynaBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,8 +11,9 @@ import com.allyes.mtp.Action;
 import com.allyes.mtp.ActionContext;
 import com.allyes.mtp.Response;
 import com.allyes.mtp.common.Config;
-import com.allyes.mtp.common.HttpContentType;
+import com.allyes.mtp.common.HttpFormat;
 import com.allyes.mtp.common.HttpStatus;
+import com.allyes.mtp.common.error.AppException;
 import com.allyes.mtp.utils.FreemarkerHelper;
 
 /**
@@ -22,50 +24,58 @@ import com.allyes.mtp.utils.FreemarkerHelper;
  * 最终其返回值插入到对应模板中。
  * 
  * @author qaohao
- * 
- * @param <T>
- *            结果VO类
  */
-public abstract class BaseAction<T> implements Action {
+public abstract class BaseAction implements Action {
 	private static final Logger LOG = LoggerFactory.getLogger(BaseAction.class);
 
 	@Autowired
-	private Config config;
+	protected Config config;
 
 	@Autowired
 	protected FreemarkerHelper freemarkerHelper;
 
 	@Override
 	public Response request(ActionContext actionContext) {
-		// 参数认证通过且参数合法，则继续响应请求。
 		Map paramMap = actionContext.getParamMap();
-		if (authenticate(paramMap) && validate(paramMap)) {
-			LOG.info("认证通过且请求参数合法。");
-			// 获取请求内容类型，默认是json
-			HttpContentType htpContentType = HttpContentType.json;
-			if (paramMap.containsKey("format")) {
-				htpContentType = HttpContentType.getInstance(paramMap.get(
-						"format").toString());
-			}
-			LOG.info("请求内容格式为："+htpContentType.getFormat());
-			
-			// 处理请求并将处理结果插入到模板中。
-			T t = execute(paramMap);
-			String template = actionContext.getRequstUri()
-					+ htpContentType.getSuffix();
-			LOG.info("请求响应的模板：" + template);
-			String content = freemarkerHelper.merge(template, t);
+		LOG.info("请求参数：" + paramMap);
 
-			// 组装Response对象。
+		// 获取请求内容类型，默认是json
+		HttpFormat httpFormat = HttpFormat.json;
+		if (paramMap.containsKey("format")) {
+			httpFormat = HttpFormat.getInstance(paramMap.get("format")
+					.toString());
+		}
+		LOG.info("请求内容格式为：" + httpFormat.getFormat());
+		
+		try {
+			// 参数认证通过且参数合法，则继续响应请求。
+			if (authenticate(paramMap) && validate(paramMap)) {
+				LOG.info("认证通过且请求参数合法。");
+
+				// 处理请求并将处理结果插入到模板中。
+				String template = actionContext.getRequstUri()
+						+ httpFormat.getSuffix();
+				LOG.info("请求响应的模板：" + template);
+				String content = freemarkerHelper.merge(template,
+						execute(paramMap));
+
+				// 组装Response对象。
+				Response response = new Response();
+				response.setStatus(HttpStatus.SC_OK);
+				response.setType(httpFormat.getContentType());
+				response.setContent(content);
+				return response;
+			} else {
+				LOG.error("认证不通过或者参数中包含无效值！");
+				// TODO
+				throw new AppException(10, "认证不通过或者参数中包含无效值！");
+			}
+		} catch (AppException e) {
 			Response response = new Response();
 			response.setStatus(HttpStatus.SC_OK);
-			response.setType(htpContentType.getContentType());
-			response.setContent(content);
+			response.setType(httpFormat.getContentType());
+			response.setContent(freemarkerHelper.merge("error.json", e));
 			return response;
-		} else {
-			LOG.error("认证不通过或者参数中包含无效值！");
-			// TODO
-			return null;
 		}
 	}
 
@@ -88,7 +98,7 @@ public abstract class BaseAction<T> implements Action {
 	 *            参数Map
 	 * @return 处理后的结果。
 	 */
-	public abstract T execute(Map paramMap);
+	public abstract DynaBean execute(Map paramMap) throws AppException;
 
 	/**
 	 * 根据规则验证token有效性。

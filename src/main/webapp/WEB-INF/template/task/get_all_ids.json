@@ -1,0 +1,13 @@
+<#compress>
+{
+	"status":"ok",
+	"result" : {
+		"count": ${count},
+		"id_list":[
+		<#list taskIdList as taskId>
+			"${taskId}"<#if taskId_has_next>,</#if>
+		</#list>	
+		]
+	}
+}
+</#compress>

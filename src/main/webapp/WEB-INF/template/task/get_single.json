@@ -1,0 +1,8 @@
+<#compress>
+{
+	"status":"ok",
+	"result": {
+		"task":${task.value}
+	}
+}
+</#compress>

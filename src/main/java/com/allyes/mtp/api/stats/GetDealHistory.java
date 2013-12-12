@@ -1,12 +1,11 @@
 package com.allyes.mtp.api.stats;
 
-import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.beanutils.DynaBean;
 import org.springframework.stereotype.Repository;
 
 import com.allyes.mtp.api.BaseAction;
-import com.allyes.mtp.vo.Deal;
 
 /**
  * 获取交易历史记录api接口。
@@ -14,9 +13,9 @@ import com.allyes.mtp.vo.Deal;
  * @author qaohao
  */
 @Repository
-public class GetDealHistory extends BaseAction<List<Deal>> {
+public final class GetDealHistory extends BaseAction {
 	@Override
-	public List<Deal> execute(Map paramMap) {
+	public DynaBean execute(Map paramMap) {
 		// TODO
 		return null;
 	}

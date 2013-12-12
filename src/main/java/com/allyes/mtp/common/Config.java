@@ -3,7 +3,7 @@ package com.allyes.mtp.common;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Repository;
 
 import com.allyes.mtp.utils.spring.Properties;
@@ -24,6 +24,10 @@ public class Config {
 	private String actionPackageLocator;
 	@Properties(name = "action.template.dir")
 	private String actionTemplateDir;
+	@Properties(name = "dianping.appkey")
+	private String dianpingAppKey;
+	@Properties(name = "dianping.app.secret")
+	private String dianpingAppSecret;
 	
 	/**
 	 * @return the actionPackageLocator
@@ -66,6 +70,20 @@ public class Config {
 		return dbPswd;
 	}
 	
+	/**
+	 * @return the dianpingAppKey
+	 */
+	public String getDianpingAppKey() {
+		return dianpingAppKey;
+	}
+
+	/**
+	 * @return the dianpingAppSecret
+	 */
+	public String getDianpingAppSecret() {
+		return dianpingAppSecret;
+	}
+
 	void parseJdbcUrl() {
 		if (StringUtils.isNotBlank(dbHost) || StringUtils.isNotBlank(dbPort)
 				|| StringUtils.isNotBlank(database)) {

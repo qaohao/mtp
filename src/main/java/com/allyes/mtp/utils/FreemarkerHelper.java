@@ -14,9 +14,11 @@ import org.springframework.stereotype.Repository;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.allyes.mtp.common.Config;
+import com.allyes.mtp.utils.spring.Properties;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
+import freemarker.template.TemplateExceptionHandler;
 
 /**
  * @author qaohao
@@ -24,18 +26,29 @@ import freemarker.template.Template;
 @Repository
 public class FreemarkerHelper implements
 		ApplicationListener<ContextRefreshedEvent> {
-	private Logger LOG = LoggerFactory.getLogger(FreemarkerHelper.class);
+	private static final Logger LOG = LoggerFactory.getLogger(FreemarkerHelper.class);
 	@Autowired
 	private Config config;
+	@Properties(name="encoding")
+	private String encoding;
+	@Properties(name="number_format")
+	private String numberFormat;
+	@Properties(name="datetime_format")
+	private String datetimeFormat;
+	@Properties(name="date_format")
+	private String dateFormat;
+	@Properties(name="time_format")
+	private String timeFormat;
+	@Properties(name="template_exception_handler")
+	private String templateExceptionHandler;
+
 	private Configuration configure = null;
-	private String DEFAULT_ENCODING = "UTF-8";
 
 	@SuppressWarnings("rawtypes")
 	public String merge(String template, Object model) {
 		Writer output = null;
 		try {
-			Template freemarkerTemplate = configure.getTemplate(template,
-					DEFAULT_ENCODING);
+			Template freemarkerTemplate = configure.getTemplate(template);
 			output = new StringWriter();
 			freemarkerTemplate.process(model, output);
 			return output.toString();
@@ -54,7 +67,26 @@ public class FreemarkerHelper implements
 			configure.setServletContextForTemplateLoading(
 					((WebApplicationContext)applicationContext).getServletContext(),
 					config.getActionTemplateDir());
-			configure.setDefaultEncoding(DEFAULT_ENCODING);
+			configure.setDefaultEncoding(encoding);
+			configure.setOutputEncoding(encoding);
+			configure.setNumberFormat(numberFormat);
+			configure.setDateFormat(dateFormat);
+			configure.setTimeFormat(timeFormat);
+			configure.setDateTimeFormat(datetimeFormat);
+			switch (templateExceptionHandler) {
+			case "RETHROW":
+				configure.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
+				break;
+			case "DEBUG":
+				configure.setTemplateExceptionHandler(TemplateExceptionHandler.DEBUG_HANDLER);
+				break;
+			case "IGNORE":
+				configure.setTemplateExceptionHandler(TemplateExceptionHandler.IGNORE_HANDLER);
+				break;
+			case "HTML_DEBUG":
+				configure.setTemplateExceptionHandler(TemplateExceptionHandler.HTML_DEBUG_HANDLER);
+				break;
+			}
 			LOG.info("Freemarker环境配置初始化完毕。");
 		}
 	}

@@ -1,8 +1,8 @@
-<@compress single_line=true>
+<#compress>
 {
 	"status":"ok",
 	"error":"error",
 	"content":[
 	]
 }
-</@compress>
+</#compress>
