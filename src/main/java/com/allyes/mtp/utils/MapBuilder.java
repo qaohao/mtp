@@ -1,8 +1,6 @@
-package com.allyes.mtp.common;
+package com.allyes.mtp.utils;
 
 import java.util.Map;
-
-import com.allyes.mtp.utils.ReflectUtils;
 
 
 public final class MapBuilder {

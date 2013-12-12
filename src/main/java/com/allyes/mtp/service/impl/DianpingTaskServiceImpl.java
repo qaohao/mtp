@@ -12,9 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.allyes.mtp.common.Config;
-import com.allyes.mtp.common.MapBuilder;
 import com.allyes.mtp.common.error.AppException;
 import com.allyes.mtp.service.TaskService;
+import com.allyes.mtp.utils.MapBuilder;
 import com.allyes.mtp.utils.dianping.ApiTool;
 import com.allyes.mtp.utils.dianping.Apis;
 import com.allyes.mtp.vo.Task;
