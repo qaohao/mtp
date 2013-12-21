@@ -10,7 +10,7 @@ import com.allyes.mtp.utils.Assert;
  * @author qaohao
  */
 public enum HttpFormat {
-	json("application/json"), xml("text/xml");
+	json("application/json"), xml("text/xml"),html("text/html");
 	private String format;
 	private String contentType;
 
@@ -25,6 +25,8 @@ public enum HttpFormat {
 			return json;
 		} else if (xml.format.equals(format)) {
 			return xml;
+		} else if (html.format.equals(format)) {
+			return html;
 		} else {
 			return json;
 		}

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html class="ng-scope" ng-app="otApp.Landing" lang="en">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<style type="text/css">
+@charset "UTF-8"; 
+
+[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide
+	{
+	display: none !important;
+}
+
+ng\:form {
+	display: block;
+}
+
+.ng-animate-start {
+	border-spacing: 1px 1px;
+	-ms-zoom: 1.0001;
+}
+
+.ng-animate-active {
+	border-spacing: 0px 0px;
+	-ms-zoom: 1;
+}
+</style>
+<meta charset="utf-8">
+<meta
+	content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+	name="viewport">
+<link rel="stylesheet" type="text/css" href="${ctx}/assets/css/main.css">
+<link rel="stylesheet" type="text/css" href="${ctx}/assets/css/list_view.css">
+<body id="search-findatable-action"
+	class="ot locale-en-us background-light">
+	<div class="ng-scope" ng-controller="LandingAppController">
+		<!-- ngView:  -->
+		<div class="ng-scope" ng-view="">
+			<div class="navbar navbar-flat navbar-fixed-top ng-scope">
+				<div id="navitem-menu-toggle"
+					class="col col-xs-3 col-button link-header link-left"
+					data-toggle="collapse" data-target=".navbar-header-collapse"
+					toggle-menu="">
+					<span id="navitem-menu-icon" class="ss-rows"></span> <span
+						id="navitem-menu">MENU</span>
+				</div>
+
+				<div class="col col-xs-6"
+					toggle-display-on-scroll="{defaultSelector: '.navitem-logo', afterScrollSelector: '.navitem-after-scroll', scrollThreshold: 120}"
+					scroll-to-top-on-click="">
+					<div style="display: block;" id="navitem-logo"
+						class="logo navitem-logo"></div>
+					<div style="display: none;" id="navitem-after-scroll"
+						class="navitem-after-scroll link-header">
+						<span class="ss-navigateup icon"></span> <span class="title">BACK
+							TO TOP</span>
+					</div>
+				</div>
+			</div>
+
+			<div class="header-margin-wide ng-scope"></div>
+
+			<div class="modal-backdrop backdrop-landing ng-scope"></div>
+
+
+			<div class="col-xs-12 even-padding spacing-bottom-margin ng-scope">
+				<span id="location-action"
+					class="btn btn-secondary btn-block location-action ellipsis-overflow"
+					ng-click="handleChangeLocationClick()"> <span
+					class="ss-search font-icon"></span> <span id="location-label"
+					class="location-label font-normal ng-binding"
+					ng-bind-html="locationLabel">Restaurants in <span
+						class="location">西安</span></span>
+				</span>
+			</div>
+
+			<div class="ng-scope" id="ResultsView"
+				ng-controller="ResultsListController">
+				<ul style="" id="results-list"
+					ng-show="restaurantSearchService.showResults"
+					class="result-list result-list-alternative result-list-no-top-margin"
+					infinite-scroll="loadNextPage()" infinite-scroll-distance="2"
+					restaurant-result-item-onclick="listItemClicked()"
+					restaurant-result-item-selector="li.result-item-clickable">
+					<!-- ngRepeat: result in restaurantSearchService.results -->
+					<#list taskList as task>					
+						<li id="result-${task_index}"
+							class="result-item-landing result-item-clickable "
+							data-rid="${task_index}"
+							ng-repeat="result in restaurantSearchService.results">
+							<div class="thumbnail">
+								<img
+									src="${task.s_image_url}"
+									class="restaurant-image"
+									ng-src="${task.image_url}"
+									height="75" width="75">
+							</div>
+							<div class="name">
+								<a
+									href="${task.deal_h5_url}"
+									class="name-link restaurant-name ng-binding"
+									ng-bind="result.restaurantName">${task.title}</a>
+							</div>
+							<div class="info-right">
+								<div class="meta price ng-binding" ng-bind="result.price">￥</div>
+								<div class="meta distance ng-binding"
+									ng-show="result.distance &gt; -1"
+									ng-bind="result.distanceString">${task.current_price}</div>
+							</div>
+	
+							<div class="info">
+								<div class="meta cuisine ng-binding" ng-bind="result.cuisine">${task.city}</div>
+								<div class="meta neighborhood ng-binding"
+									ng-bind="result.neighborhood">${task.description}</div>
+	
+								<div class="meta"
+									ng-show="result.ratings != null &amp;&amp; result.ratings.rating &gt; 0">
+									<div class="rating-stars s-3-5"></div>
+									<span class="review-count"
+										ng-show="result.ratings.reviewsCount &gt; 0"><span
+										class="ng-binding"
+										ng-bind="(result.ratings.reviewsCountString)">91</span></span>
+								</div>
+	
+								<ul class="result-item-times-landing">
+									<!-- ngRepeat: time in result.timeSlots -->
+									<li class="time ng-scope" ng-repeat="time in result.timeSlots">
+										<span class="ng-binding" ng-bind="time.timeString">${task.publish_date}&nbsp;</span> 
+										<span class="pop-badge ng-hide" ng-show="time.isPop">+</span>
+									</li>
+									<!-- end ngRepeat: time in result.timeSlots -->
+								</ul>
+	
+								<ul id="popInfo" class="pop-info-landing ng-hide"
+									ng-show="result.ribbonText != ''">
+									<li><span class="pop-badge">+</span></li>
+									<li><span class="pop-text ng-binding"
+										ng-bind="result.ribbonText"></span></li>
+								</ul>
+							</div>
+						</li>
+					</#list>
+					<!-- end ngRepeat: result in restaurantSearchService.results -->
+				</ul>
+
+				<div ng-show="restaurantSearchService.showNoResults"
+					class="col-xs-12 even-padding results-no-restaurants ng-binding ng-hide"
+					ng-bind-html="restaurantSearchService.noRestaurantMessage">
+					<p class="caption">No restaurants found</p>
+					<p class="subtext">Try another search?</p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="loading-dots-container ng-hide"
+		ng-show="loadingState.showLoading">
+		<div class="background">&nbsp;</div>
+		<div class="line-wrapper">
+			<div class="line">
+				<div class="loading-dots horizontal one"></div>
+				<div class="loading-dots horizontal two"></div>
+				<div class="loading-dots horizontal three"></div>
+				<div class="loading-dots horizontal four"></div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.allyes.mtp.common.Config;
+import com.allyes.mtp.common.error.SystemException;
 import com.allyes.mtp.utils.spring.Properties;
 
 import freemarker.template.Configuration;
@@ -61,32 +62,38 @@ public class FreemarkerHelper implements
 	
 	@Override
 	public void onApplicationEvent(ContextRefreshedEvent event) {
-		ApplicationContext applicationContext = event.getApplicationContext();
-		if (applicationContext instanceof WebApplicationContext) {
-			configure = new Configuration();
-			configure.setServletContextForTemplateLoading(
-					((WebApplicationContext)applicationContext).getServletContext(),
-					config.getActionTemplateDir());
-			configure.setDefaultEncoding(encoding);
-			configure.setOutputEncoding(encoding);
-			configure.setNumberFormat(numberFormat);
-			configure.setDateFormat(dateFormat);
-			configure.setTimeFormat(timeFormat);
-			configure.setDateTimeFormat(datetimeFormat);
-			switch (templateExceptionHandler) {
-			case "RETHROW":
-				configure.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
-				break;
-			case "DEBUG":
-				configure.setTemplateExceptionHandler(TemplateExceptionHandler.DEBUG_HANDLER);
-				break;
-			case "IGNORE":
-				configure.setTemplateExceptionHandler(TemplateExceptionHandler.IGNORE_HANDLER);
-				break;
-			case "HTML_DEBUG":
-				configure.setTemplateExceptionHandler(TemplateExceptionHandler.HTML_DEBUG_HANDLER);
-				break;
+		try {
+			ApplicationContext appContext = event.getApplicationContext();
+			if (appContext instanceof WebApplicationContext) {
+				configure = new Configuration();
+				configure.setServletContextForTemplateLoading(
+						((WebApplicationContext)appContext).getServletContext(),
+						config.getActionTemplateDir());
+				configure.setDefaultEncoding(encoding);
+				configure.setOutputEncoding(encoding);
+				configure.setNumberFormat(numberFormat);
+				configure.setDateFormat(dateFormat);
+				configure.setTimeFormat(timeFormat);
+				configure.setDateTimeFormat(datetimeFormat);
+				switch (templateExceptionHandler) {
+				case "RETHROW":
+					configure.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
+					break;
+				case "DEBUG":
+					configure.setTemplateExceptionHandler(TemplateExceptionHandler.DEBUG_HANDLER);
+					break;
+				case "IGNORE":
+					configure.setTemplateExceptionHandler(TemplateExceptionHandler.IGNORE_HANDLER);
+					break;
+				case "HTML_DEBUG":
+					configure.setTemplateExceptionHandler(TemplateExceptionHandler.HTML_DEBUG_HANDLER);
+					break;
+				}
+				configure.setSharedVariable("ctx", SpringHelper.getServletContextPath((WebApplicationContext) appContext));
 			}
+		} catch (Exception e) {
+			throw new SystemException("Freemarker环境配置初始化中失败！", e);
+		} finally {
 			LOG.info("Freemarker环境配置初始化完毕。");
 		}
 	}

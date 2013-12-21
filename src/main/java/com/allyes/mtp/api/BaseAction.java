@@ -2,6 +2,7 @@ package com.allyes.mtp.api;
 
 import java.util.Map;
 
+import org.apache.commons.beanutils.BasicDynaBean;
 import org.apache.commons.beanutils.DynaBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,23 +31,17 @@ public abstract class BaseAction implements Action {
 
 	@Autowired
 	protected Config config;
-
 	@Autowired
 	protected FreemarkerHelper freemarkerHelper;
 
 	@Override
-	public Response request(ActionContext actionContext) {
+	public final Response request(ActionContext actionContext) {
 		Map paramMap = actionContext.getParamMap();
 		LOG.info("请求参数：" + paramMap);
 
-		// 获取请求内容类型，默认是json
-		HttpFormat httpFormat = HttpFormat.json;
-		if (paramMap.containsKey("format")) {
-			httpFormat = HttpFormat.getInstance(paramMap.get("format")
-					.toString());
-		}
+		HttpFormat httpFormat = getResultFormat(actionContext);
 		LOG.info("请求内容格式为：" + httpFormat.getFormat());
-		
+
 		try {
 			// 参数认证通过且参数合法，则继续响应请求。
 			if (authenticate(paramMap) && validate(paramMap)) {
@@ -56,8 +51,9 @@ public abstract class BaseAction implements Action {
 				String template = actionContext.getRequstUri()
 						+ httpFormat.getSuffix();
 				LOG.info("请求响应的模板：" + template);
+				DynaBean dynaBean = execute(paramMap);
 				String content = freemarkerHelper.merge(template,
-						execute(paramMap));
+						((BasicDynaBean)dynaBean).getMap());
 
 				// 组装Response对象。
 				Response response = new Response();
@@ -74,7 +70,8 @@ public abstract class BaseAction implements Action {
 			Response response = new Response();
 			response.setStatus(HttpStatus.SC_OK);
 			response.setType(httpFormat.getContentType());
-			response.setContent(freemarkerHelper.merge("error.json", e));
+			response.setContent(freemarkerHelper.merge(
+					"error" + httpFormat.getSuffix(), e));
 			return response;
 		}
 	}
@@ -87,7 +84,6 @@ public abstract class BaseAction implements Action {
 	 * @return 不合法返回false，否则返回true
 	 */
 	public boolean validate(Map paramMap) {
-		// TODO
 		return true;
 	}
 
@@ -109,5 +105,19 @@ public abstract class BaseAction implements Action {
 	 */
 	final boolean authenticate(Map paramMap) {
 		return true;
+	}
+	
+	final HttpFormat getResultFormat(ActionContext actionContext) {
+		Map paramMap = actionContext.getParamMap();
+		// 获取请求内容类型，默认是json
+		HttpFormat httpFormat = HttpFormat.json;
+		if (paramMap.containsKey("format")) {
+			httpFormat = HttpFormat.getInstance(paramMap.get("format")
+					.toString());
+		} else if (actionContext.getRequstUri().startsWith("widget")) {
+			LOG.debug("访问widget目录下资源，返回内容格式是html。");
+			httpFormat = HttpFormat.html;
+		}
+		return httpFormat;
 	}
 }

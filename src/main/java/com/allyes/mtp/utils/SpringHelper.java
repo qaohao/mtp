@@ -18,7 +18,11 @@ public class SpringHelper {
 			SpringHelper.servletContext = servletContext;
 		}
 	}
-
+	
+	public static String getServletContextPath(WebApplicationContext appContext) {
+		return appContext.getServletContext().getContextPath();
+	}
+	
 	/**
 	 * 从spring容器中得到Bean
 	 * 

@@ -36,4 +36,4 @@ public final class GetDealHistory extends BaseAction {
 	public DynaBean execute(Map paramMap) {
 		return null;
 	}
-}
+} 
