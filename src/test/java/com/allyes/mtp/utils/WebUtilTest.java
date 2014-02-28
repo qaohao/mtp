@@ -1,7 +1,11 @@
 package com.allyes.mtp.utils;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.httpclient.URIException;
+import org.apache.commons.httpclient.util.URIUtil;
 
 import junit.framework.TestCase;
 

@@ -13,19 +13,14 @@ package com.allyes.mtp.utils.dianping;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.collections.ListUtils;
 import org.apache.commons.collections.MapUtils;
-import org.apache.commons.collections.SetUtils;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.URIException;
@@ -59,7 +54,7 @@ public class ApiTool {
 		if (map == null || map.isEmpty()) {
 			return null;
 		}
-		Map<String, String> newMap = new HashMap<>();
+		Map<String, String> newMap = new HashMap<String, String>();
 		for (Object entry : map.entrySet()) {
 			Object key = ((Map.Entry) entry).getKey();
 			Object value = ((Map.Entry) entry).getValue();
@@ -98,17 +93,18 @@ public class ApiTool {
 	
 	static String sign(String appKey, String secret,
 			Map<String, String> paramMap) {
-		// 对参数名进行字典排序
-		String[] keyArray = paramMap.keySet().toArray(new String[0]);
-		Arrays.sort(keyArray);
 
 		// 拼接有序的参数名-值串
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append(appKey);
-		for (String key : keyArray) {
-			stringBuilder.append(key).append(paramMap.get(key));
+		if (MapUtils.isNotEmpty(paramMap)) {
+			// 对参数名进行字典排序
+			String[] keyArray = paramMap.keySet().toArray(new String[0]);
+			Arrays.sort(keyArray);
+			for (String key : keyArray) {
+				stringBuilder.append(key).append(paramMap.get(key));
+			}
 		}
-
 		stringBuilder.append(secret);
 		String codes = stringBuilder.toString();
 
@@ -135,9 +131,11 @@ public class ApiTool {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("appkey=").append(appKey).append("&sign=")
 				.append(sign);
-		for (Entry<String, String> entry : paramMap.entrySet()) {
-			stringBuilder.append('&').append(entry.getKey()).append('=')
-					.append(entry.getValue());
+		if (MapUtils.isNotEmpty(paramMap)) {
+			for (Entry<String, String> entry : paramMap.entrySet()) {
+				stringBuilder.append('&').append(entry.getKey()).append('=')
+						.append(entry.getValue());
+			}
 		}
 		String queryString = stringBuilder.toString();
 		return queryString;

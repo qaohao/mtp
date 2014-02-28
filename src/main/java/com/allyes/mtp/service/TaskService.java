@@ -9,4 +9,6 @@ public interface TaskService {
 	public Task getSingle(String id) throws AppException;
 
 	public Task[] getBatch(String[] idArr) throws AppException;
+
+	public String[] getCities() throws AppException;
 }

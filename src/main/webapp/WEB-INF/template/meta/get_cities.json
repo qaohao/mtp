@@ -1,0 +1,12 @@
+<#compress>
+{
+	"status":"ok",
+	"result":{
+		"city_list":[
+			<#list cityList as city>
+				"${city}"<#if city_has_next>,</#if>
+			</#list>	
+		]
+	}
+}
+</#compress>

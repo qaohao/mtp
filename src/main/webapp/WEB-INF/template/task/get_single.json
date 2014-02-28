@@ -2,7 +2,8 @@
 {
 	"status":"ok",
 	"result": {
-		"task":${task.value}
+		"task":<#if task ??>${task.value}
+		<#else>{}</#if>
 	}
 }
 </#compress>

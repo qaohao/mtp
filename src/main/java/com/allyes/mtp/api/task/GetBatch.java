@@ -38,9 +38,12 @@ public final class GetBatch extends BaseAction {
 			resultBean.set("count", taskList.length);
 			resultBean.set("taskList", taskList);
 			return resultBean;
-		} catch (IllegalAccessException | InstantiationException e) {
+		} catch (IllegalAccessException e) {
 			LOG.error("创建对象失败！", e);
-			throw new SystemException("创建对象失败！", e);
+			throw new SystemException("创建对象失败！");
+		} catch (InstantiationException e) {
+			LOG.error("创建对象失败！", e);
+			throw new SystemException("创建对象失败！");
 		}
 	}
 }

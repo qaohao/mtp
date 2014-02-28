@@ -75,21 +75,17 @@ public class FreemarkerHelper implements
 				configure.setDateFormat(dateFormat);
 				configure.setTimeFormat(timeFormat);
 				configure.setDateTimeFormat(datetimeFormat);
-				switch (templateExceptionHandler) {
-				case "RETHROW":
+				if ("RETHROW".equals(templateExceptionHandler)) {
 					configure.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
-					break;
-				case "DEBUG":
+				} else if ("DEBUG".equals(templateExceptionHandler)) {
 					configure.setTemplateExceptionHandler(TemplateExceptionHandler.DEBUG_HANDLER);
-					break;
-				case "IGNORE":
+				} else if ("IGNORE".equals(templateExceptionHandler)) {
 					configure.setTemplateExceptionHandler(TemplateExceptionHandler.IGNORE_HANDLER);
-					break;
-				case "HTML_DEBUG":
+				} else if ("HTML_DEBUG".equals(templateExceptionHandler)) {
 					configure.setTemplateExceptionHandler(TemplateExceptionHandler.HTML_DEBUG_HANDLER);
-					break;
+				} else {
+					configure.setSharedVariable("ctx", SpringHelper.getServletContextPath((WebApplicationContext) appContext));
 				}
-				configure.setSharedVariable("ctx", SpringHelper.getServletContextPath((WebApplicationContext) appContext));
 			}
 		} catch (Exception e) {
 			throw new SystemException("Freemarker环境配置初始化中失败！", e);

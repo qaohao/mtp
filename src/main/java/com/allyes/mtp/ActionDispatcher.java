@@ -74,7 +74,7 @@ public class ActionDispatcher implements
 			return;
 		}
 
-		actionMap = new Hashtable<>();
+		actionMap = new Hashtable();
 		for (String beanName : beanNames) {
 			Action actionBean = (Action) applicationContext.getBean(beanName);
 			String baseUri = actionBean.getClass().getPackage().getName()

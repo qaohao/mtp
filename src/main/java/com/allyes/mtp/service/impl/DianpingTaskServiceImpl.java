@@ -48,9 +48,13 @@ public class DianpingTaskServiceImpl implements TaskService {
 				MapBuilder.newInstance(HashMap.class).put("deal_id", id).map());
 		JSONObject jsonObject = JSONObject.fromObject(result);
 		if ("ok".equalsIgnoreCase(jsonObject.getString("status"))) {
-			Task task = new Task();
-			task.setValue(jsonObject.get("deals").toString());
-			return task;
+			JSONArray jsonArray = jsonObject.getJSONArray("deals");
+			if (jsonArray != null && !jsonArray.isEmpty()) {
+				Task task = new Task();
+				task.setValue(jsonArray.get(0).toString());
+				return task;
+			}
+			return null;
 		} else {
 			JSONObject error = jsonObject.getJSONObject("error");
 			throw new AppException(error.getInt("errorCode"),
@@ -75,6 +79,22 @@ public class DianpingTaskServiceImpl implements TaskService {
 				taskList.add(task);
 			}
 			return taskList.toArray(new Task[0]);
+		} else {
+			JSONObject error = jsonObject.getJSONObject("error");
+			throw new AppException(error.getInt("errorCode"),
+					error.getString("errorMessage"));
+		}
+	}
+
+	@Override
+	public String[] getCities() throws AppException {
+		String result = ApiTool.requestApi(Apis.get_cities_with_businesses,
+				config.getDianpingAppKey(), config.getDianpingAppSecret(), null);
+
+		JSONObject jsonObject = JSONObject.fromObject(result);
+		if ("ok".equalsIgnoreCase(jsonObject.getString("status"))) {
+			return (String[]) JSONArray.toArray(
+					jsonObject.getJSONArray("cities"), String.class);
 		} else {
 			JSONObject error = jsonObject.getJSONObject("error");
 			throw new AppException(error.getInt("errorCode"),

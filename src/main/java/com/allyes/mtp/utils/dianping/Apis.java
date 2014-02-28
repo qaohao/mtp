@@ -1,6 +1,8 @@
 package com.allyes.mtp.utils.dianping;
 
 public interface Apis {
+	/** 获取支持商户搜索的最新城市列表 */
+	String get_cities_with_businesses = "http://api.dianping.com/v1/metadata/get_cities_with_businesses";
 	/** 根据多个团购ID批量获取指定团购单的详细信息 */
 	String get_batch_deals_by_id = "http://api.dianping.com/v1/deal/get_batch_deals_by_id";
 	/** 获取指定城市当前在线的全部团购ID列表 */
