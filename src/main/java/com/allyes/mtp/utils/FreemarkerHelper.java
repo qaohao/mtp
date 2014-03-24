@@ -83,9 +83,9 @@ public class FreemarkerHelper implements
 					configure.setTemplateExceptionHandler(TemplateExceptionHandler.IGNORE_HANDLER);
 				} else if ("HTML_DEBUG".equals(templateExceptionHandler)) {
 					configure.setTemplateExceptionHandler(TemplateExceptionHandler.HTML_DEBUG_HANDLER);
-				} else {
-					configure.setSharedVariable("ctx", SpringHelper.getServletContextPath((WebApplicationContext) appContext));
 				}
+				
+				configure.setSharedVariable("ctx", SpringHelper.getServletContextPath((WebApplicationContext) appContext));
 			}
 		} catch (Exception e) {
 			throw new SystemException("Freemarker环境配置初始化中失败！", e);

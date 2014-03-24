@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import com.allyes.mtp.utils.SpringHelper;
 import com.allyes.mtp.utils.WebUtil;
+import com.allyes.mtp.utils.ip.IPHelper;
 
 public class ApiHttpServlet extends HttpServlet implements ActionContext {
 	private static final Logger LOG = LoggerFactory
@@ -34,6 +35,8 @@ public class ApiHttpServlet extends HttpServlet implements ActionContext {
 	@Override
 	public void init() throws ServletException {
 		uriPrefix = getInitParameter("uri_prefix");
+		// 饿汉模式，加载ip库。
+		IPHelper.getIPHelper();
 	}
 
 	@Override
@@ -74,6 +77,10 @@ public class ApiHttpServlet extends HttpServlet implements ActionContext {
 				paramMap.put(paramName, req.getParameter(paramName));
 			}
 		}
+		String ip = req.getRemoteAddr();
+		String regionId = IPHelper.getIPHelper().toRegion(ip);
+		paramMap.put("ip", ip);
+		paramMap.put("regionId", regionId);
 		this.reqParamMap = paramMap;
 		doResponse(resp);
 	}
